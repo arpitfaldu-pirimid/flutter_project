@@ -3,6 +3,7 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 import '../config/app_config.dart';
 
 class WebSocketService {
+
   late StompClient _client;
   Function(dynamic)? onAllStocks;
   Function(dynamic)? onSingleStock;
@@ -40,7 +41,9 @@ class WebSocketService {
     _client.subscribe(
       destination: AppConfig.singleStockTopic,
       callback: (frame) {
-        if (frame.body == null) return;
+        if (frame.body == null){
+          return;
+        }
         final decoded = jsonDecode(frame.body!);
         onSingleStock?.call(decoded);
       },

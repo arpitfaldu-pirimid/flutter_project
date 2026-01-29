@@ -1,19 +1,19 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConfig {
 
-  // Backend websocket link
-  static const String baseUrl =
-      "http://192.168.1.58:8080";
+  static String get baseUrl =>
+      dotenv.env['BASE_URL'] ?? '';
 
-  //main  connection endpoint
-  static const String socketUrl =
-      "$baseUrl/prices";
+  static String get socketUrl =>
+      '$baseUrl${dotenv.env['SOCKET_ENDPOINT'] ?? ''}';
 
-  static const String allStocksTopic =
-      "/topic/prices";
+  static String get allStocksTopic =>
+      dotenv.env['ALL_STOCKS_TOPIC'] ?? '';
 
-  static const String singleStockTopic =
-      "/topic/single";
+  static String get singleStockTopic =>
+      dotenv.env['SINGLE_STOCK_TOPIC'] ?? '';
 
-  static const String singleStockSend =
-      "/app/single-stock";
+  static String get singleStockSend =>
+      dotenv.env['SINGLE_STOCK_SEND'] ?? '';
 }

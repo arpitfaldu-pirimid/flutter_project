@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mini_project/controller/stock_controller.dart' hide StockController;
-import 'package:flutter_mini_project/model/stock_model.dart' hide Stock;
 import 'package:provider/provider.dart';
+
 import '../controller/stock_controller.dart';
 import '../model/stock_model.dart';
 
 class StockScreen extends StatefulWidget {
+
   const StockScreen({super.key});
 
   @override
@@ -16,12 +16,14 @@ class _StockScreenState extends State<StockScreen> {
 
   final TextEditingController _symbolController =
   TextEditingController();
+
   bool showAll = false;
   bool showSingle = false;
 
   @override
   void initState() {
     super.initState();
+
     Future.microtask(() {
       context.read<StockController>().init();
     });
@@ -29,15 +31,21 @@ class _StockScreenState extends State<StockScreen> {
 
   @override
   void dispose() {
+
     context.read<StockController>().disposeController();
+
     _symbolController.dispose();
+
     super.dispose();
   }
 
+  // ---------------- UI ----------------
 
   @override
   Widget build(BuildContext context) {
+
     final controller = context.watch<StockController>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Live Stock Prices"),
@@ -49,8 +57,11 @@ class _StockScreenState extends State<StockScreen> {
 
         child: Column(
           children: [
+
+            // Input
             TextField(
               controller: _symbolController,
+
               decoration: const InputDecoration(
                 labelText: "Stock Symbol (AAPL)",
                 border: OutlineInputBorder(),
@@ -59,8 +70,10 @@ class _StockScreenState extends State<StockScreen> {
 
             const SizedBox(height: 10),
 
+            // Buttons
             Row(
               children: [
+
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
@@ -72,20 +85,28 @@ class _StockScreenState extends State<StockScreen> {
                     child: const Text("Show All"),
                   ),
                 ),
-
                 const SizedBox(width: 10),
 
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-
                       final symbol =
                       _symbolController.text
                           .trim()
                           .toUpperCase();
-
-                      if (symbol.isEmpty) return;
-                      controller.loadSingleStock(symbol);
+                      if (symbol.isEmpty) {
+                        context
+                            .read<StockController>()
+                            .setError("Please enter a stock symbol");
+                        setState(() {
+                          showAll = false;
+                          showSingle = true;
+                        });
+                        return;
+                      }
+                      context
+                          .read<StockController>()
+                          .loadSingleStock(symbol);
                       setState(() {
                         showAll = false;
                         showSingle = true;
@@ -96,10 +117,16 @@ class _StockScreenState extends State<StockScreen> {
                 ),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            // Data
+            const SizedBox(height: 10),
+            if (controller.error != null)
+              Text(
+                controller.error!,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            const SizedBox(height: 10),
             Expanded(
               child: _buildContent(controller),
             ),
@@ -109,12 +136,18 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
+
   Widget _buildContent(StockController controller) {
+
     if (showAll) {
       return _buildAllStocks(controller.allStocks);
     }
+
     if (showSingle) {
-      return _buildSingleStock(controller.singleStock);
+      return _buildSingleStock(
+        controller.singleStock,
+        controller.error,
+      );
     }
 
     return const Center(
@@ -122,11 +155,12 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
+
   Widget _buildAllStocks(List<Stock> stocks) {
+
     if (stocks.isEmpty) {
       return const Center(child: Text("Waiting..."));
     }
-
     return ListView.builder(
       itemCount: stocks.length,
       itemBuilder: (context, index) {
@@ -147,12 +181,13 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 
-  Widget _buildSingleStock(Stock? stock) {
-
+  Widget _buildSingleStock(Stock? stock, String? error) {
+    if (error != null) {
+      return const SizedBox();
+    }
     if (stock == null) {
       return const Center(child: Text("Loading..."));
     }
-
     return Card(
       child: ListTile(
         title: Text(stock.symbol),

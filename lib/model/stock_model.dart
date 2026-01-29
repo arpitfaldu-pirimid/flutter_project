@@ -17,4 +17,5 @@ class Stock {
       price: json['price'].toDouble(),
     );
   }
+
 }
