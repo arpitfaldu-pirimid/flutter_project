@@ -33,19 +33,14 @@ class _StockScreenState extends State<StockScreen> {
   void dispose() {
 
     context.read<StockController>().disposeController();
-
     _symbolController.dispose();
-
     super.dispose();
   }
-
-  // ---------------- UI ----------------
 
   @override
   Widget build(BuildContext context) {
 
     final controller = context.watch<StockController>();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Live Stock Prices"),
@@ -57,11 +52,8 @@ class _StockScreenState extends State<StockScreen> {
 
         child: Column(
           children: [
-
-            // Input
             TextField(
               controller: _symbolController,
-
               decoration: const InputDecoration(
                 labelText: "Stock Symbol (AAPL)",
                 border: OutlineInputBorder(),
@@ -70,7 +62,6 @@ class _StockScreenState extends State<StockScreen> {
 
             const SizedBox(height: 10),
 
-            // Buttons
             Row(
               children: [
 
